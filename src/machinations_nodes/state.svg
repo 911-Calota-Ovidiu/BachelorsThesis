@@ -1,0 +1,10 @@
+<span aria-hidden="true" class="v-icon notranslate m-generic-shape-svg theme--light black--text" style="width: 24px; height: 24px;">
+<svg id="stateConnectionCurved" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="m-icon-stroke-color">
+<rect x="2.5" y="15.5" width="2" height="2">
+</rect>
+<rect x="15.5" y="2.5" width="2" height="2">
+</rect>
+<path d="M3.5 15V15C3.5 12.2386 5.73858 10 8.5 10H11.5C14.2614 10 16.5 7.76142 16.5 5V5" stroke-dasharray="2 1.5">
+</path>
+</svg>
+</span>
