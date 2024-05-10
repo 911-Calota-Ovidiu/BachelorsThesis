@@ -5,46 +5,56 @@
                 <td>
                     <ComponentList class="component-list"/>
                 </td>
-                <td style = "text-align: right; user-select: none;">
-                    <input type="button" value="Save" @click="save_svg">
-                    <button>Load</button>
+                <td style = "align-items: center; position: absolute; justify-content: center; display: flex; width: 100px;">
+                    <input type="button" value="Save" @click="save()" style="margin-right: 20px;">
+                    <input type="button" value="Load" @click="load()">
                 </td>
             </tr>
         </table>
+        <LoadPopUp v-if="loading"/>
+        <SavePopUp v-if="saving"/>
     </div>
 </template>
 <script lang="ts">
 import ComponentList from './Component_list.vue';
 import { defineComponent} from 'vue';
-import { saveSvg } from '@/api/api_store';
 import { EventBus } from '@/api/eventbus';
+import { nodeStorage } from '@/api/node_api';
+import SavePopUp from './SavePopUp.vue';
+import LoadPopUp from './LoadPopUp.vue';
 export default defineComponent({
     name: 'HeaderBar',
     components: {
         ComponentList,
+        SavePopUp,
+        LoadPopUp
     },
-    data() {
+    data(){
         return{
-            nodeStorage: new Array,
+            saving: false,
+            loading: true,
         }
     },
     mounted() {
-        EventBus.$on("update_local_diagram", (data: any) =>{
-            console.log("data is",data)
-            this.nodeStorage=data;
+        EventBus.$on("update_local_diagram", () =>{
+            console.log("data is",nodeStorage)
+        });
+
+        EventBus.$on("loaded_or_cancelled", () =>{
+            console.log("data is",nodeStorage)
+            this.loading=false;
+        });
+        EventBus.$on("saved_or_cancelled", () =>{
+            console.log("data is",nodeStorage)
+            this.saving=false;
         });
     },
     methods: {
-        save_svg(){
-            console.log("called")
-            let nodeObjects = "";
-            for(let node of this.nodeStorage)
-            {
-                console.log("node",node)
-                nodeObjects.concat(node.renderNode());
-            }
-            console.log("nodeObjects are",nodeObjects);
-            saveSvg("test", JSON.stringify(nodeObjects));
+        save(){
+            this.saving = true;
+        },
+        load(){
+            this.loading = true;
         }
     }
 

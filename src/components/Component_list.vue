@@ -21,7 +21,7 @@ const handleKeyDown = (event: any) => {
         case "4": window.localStorage.setItem("SELECTED_NODE","Gate"); break;
         case "5": window.localStorage.setItem("SELECTED_NODE","Trader"); break;
         case "6": window.localStorage.setItem("SELECTED_NODE","Converter"); break;
-        case "7": window.localStorage.setItem("SELECTED_NODE","End Condition"); break;
+        case "7": window.localStorage.setItem("SELECTED_NODE","EndCondition"); break;
         case "8": window.localStorage.setItem("SELECTED_NODE","Text"); break;
         case "9": window.localStorage.setItem("SELECTED_NODE","Register"); break;
         default: break;
@@ -34,17 +34,17 @@ export default defineComponent({
     const nodes = ref<NodeObject[]>([]);
 
     onMounted(() => {
-      nodes.value.push(new Source(10, 20, "Source", "black", 1, 2));
-      nodes.value.push(new Drain(45, 20, "Drain", "black", 1, 1));
-      nodes.value.push(new Pool(80, 20, "Pool", "black", 1, 1));
-      nodes.value.push(new Gate(115, 20, "Gate", "black", 1, 1));
-      nodes.value.push(new Trader(150, 20, "Trader", "black", 1, 1));
-      nodes.value.push(new Converter(185, 20, "Converter", "black", 1, 1));
-      nodes.value.push(new EndCondition(220, 20, "End Condition", "black", 1, 1));
-      nodes.value.push(new TextComponent(255, 20, "Text", "black", 1, 1));
-      nodes.value.push(new Register(290, 20, "Register", "black", 1, 1));
-      nodes.value.push(new ResourceNode(325, 20, "ResourceNode", "black", 1, 1));
-      nodes.value.push(new StateNode(360, 20, "StateNode", "black", 1, 1));
+      nodes.value.push(new Source(1, 10, 20, "Source", "black", 1, 2));
+      nodes.value.push(new Drain(2, 45, 20, "Drain", "black", 1, 1));
+      nodes.value.push(new Pool(3, 80, 20, "Pool", "black", 1, 1));
+      nodes.value.push(new Gate(4, 115, 20, "Gate", "black", 1, 1));
+      nodes.value.push(new Trader(5, 150, 20, "Trader", "black", 1, 1));
+      nodes.value.push(new Converter(6, 185, 20, "Converter", "black", 1, 1));
+      nodes.value.push(new EndCondition(7, 220, 20, "End Condition", "black", 1, 1));
+      nodes.value.push(new TextComponent(8, 255, 20, "Text", "black", 1, 1));
+      nodes.value.push(new Register(9, 290, 20, "Register", "black", 1, 1));
+      nodes.value.push(new ResourceNode(10, 325, 20, "ResourceNode", "black", 1, 1));
+      nodes.value.push(new StateNode(11,360, 20, "StateNode", "black", 1, 1));
     });
     window.addEventListener('keydown', handleKeyDown);
     return {

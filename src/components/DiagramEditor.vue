@@ -19,13 +19,16 @@ import {defineComponent } from 'vue';
 import { NodeObject, getNodeFromName } from "./placeable/NodeModels";
 import { getConnectionFromName } from './placeable/NodeModels';
 import { EventBus } from '../api/eventbus';
+import { nodeStorage } from '@/api/node_api';
 export default defineComponent({
   name: 'DiagramEditor',
   components: {
     
   },
   mounted(){
-
+    EventBus.$on("loaded_or_cancelled",()=>{
+      this.nodeStorage = nodeStorage;
+    })
   },
   data(){
     return{
@@ -45,13 +48,16 @@ export default defineComponent({
     renderShape(event: any) {
       const nodeName = window.localStorage.getItem("SELECTED_NODE");
       if(nodeName){
-        let node = getNodeFromName(nodeName,event.clientX,event.clientY) ? getNodeFromName(nodeName,event.clientX - 522,event.clientY -22) : getConnectionFromName(nodeName,this.lastStart.x,this.lastStart.y,this.lastEnd.x,this.lastEnd.y);
+        let id = nodeStorage.length;
+        let node = getNodeFromName(nodeName,event.clientX,event.clientY, id + 202) ? getNodeFromName(nodeName,event.clientX - 522,event.clientY -22, id + 202) : getConnectionFromName(id + 202, nodeName,this.lastStart.x,this.lastStart.y,this.lastEnd.x,this.lastEnd.y);
         if (nodeName === "ResourceNode" || nodeName === "ResourceNode") {
           this.placingConnection = true;
         }
-        this.nodeStorage.push(node);
-        EventBus.$emit('update_local_diagram',this.nodeStorage)
+        nodeStorage.push(node);
+        EventBus.$emit('update_local_diagram',nodeStorage)
+
         console.log(node)
+        this.nodeStorage = nodeStorage;
         window.localStorage.removeItem("SELECTED_NODE");
       }
     },

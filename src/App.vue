@@ -8,9 +8,12 @@
 <script>
 import HeaderBar from './components/HeaderBar.vue';
 import DiagramEditor from './components/DiagramEditor.vue'
-
 export default {
   name: 'App',
+  data(){
+    return{
+    }
+  },
   components: {
     HeaderBar,
     DiagramEditor,
