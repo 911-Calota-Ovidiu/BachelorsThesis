@@ -5,5 +5,4 @@ export let nodeStorage :  (NodeObject | ConnectionObject)[] = [];
 export function setNodeStorage(newNodes: (NodeObject | ConnectionObject)[]) {
     nodeStorage = newNodes;
     console.log("nodestorage is", nodeStorage)
-
 }
