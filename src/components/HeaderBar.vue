@@ -1,16 +1,11 @@
 <template>
     <div class="header-bar">
-        <table>
-            <tr>
-                <td>
-                    <ComponentList class="component-list"/>
-                </td>
-                <td style = "align-items: center; position: absolute; justify-content: center; display: flex; width: 100px;">
-                    <input type="button" value="Save" @click="save()" style="margin-right: 20px;">
-                    <input type="button" value="Load" @click="load()">
-                </td>
-            </tr>
-        </table>
+        <ComponentList class="component-list"/>
+        <div style ="align-items: center; position: absolute; justify-content: center; display: flex; width: 200px; right: 20px;">
+            
+            <input class="load-save-button" type="button" value="Save" @click="save()" style="margin-right: 150px;">
+            <input class="load-save-button" type="button" value="Load" @click="load()">
+        </div>
         <LoadPopUp v-if="loading"/>
         <SavePopUp v-if="saving"/>
     </div>
@@ -64,29 +59,26 @@ export default defineComponent({
 .header-bar {
   position: relative;
   width: 100%;
-  height: 60px;
+  height: 55px;
+  z-index: 1000; /* Ensure this is higher than the z-index of the SVG elements */
+  background-color: #f8f9fa; /* Set your desired background color here */
+  border: 1px solid black; 
+
 }
 
 .component-list {
   position: absolute;
   top: 0; 
   left: 0; 
-  width: 100%; 
+  width: 100vw; 
   height: 100%; 
   z-index: -1;
+  align-items: center;
+  justify-content: center;
 }
-
-td {
-  height: 54px;
-  border: 0px solid black;
-  position: relative;
-  z-index: 1;
-}
-
-table {
-width: 100%; 
-border-collapse: collapse; 
-border: 1px solid black; 
+.load-save-button{
+    position: inherit;
+    top: 17px;
 }
 
 </style>

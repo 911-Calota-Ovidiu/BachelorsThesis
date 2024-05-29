@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <HeaderBar />
+    <NodeEditor />
     <DiagramEditor />
   </div>
 </template>
@@ -8,6 +9,7 @@
 <script>
 import HeaderBar from './components/HeaderBar.vue';
 import DiagramEditor from './components/DiagramEditor.vue'
+import NodeEditor from './components/NodeEditor.vue';
 export default {
   name: 'App',
   data(){
@@ -17,6 +19,7 @@ export default {
   components: {
     HeaderBar,
     DiagramEditor,
+    NodeEditor
   },
 }
 </script>

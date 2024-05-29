@@ -1,10 +1,10 @@
 <template>
-    <div class="save-page">
-        <div class="save-box">
-            <button class="close-button" @click="closePopup">X</button> <!-- Close button -->
+    <div class="save-page" @click="closePopup">
+        <div class="save-box" @click.stop>
+            <button class="close-button" @click="closePopup">X</button> 
             <input type="text" placeholder="Enter filename" v-model="filename">
             <div class="button-group">
-                <button class="save-button" @click="save_csv()">Save as CSV</button>
+                <button class="save-button" @click="save_csv()">Save as XLSX</button>
                 <button class="save-button" @click="save_local">Save to Local</button>
             </div>
         </div>
@@ -15,6 +15,7 @@ import { saveCSV, saveLocal } from '@/api/api_store';
 import { EventBus } from '@/api/eventbus';
 import { defineComponent } from 'vue';
 import { nodeStorage } from '@/api/node_api';
+import { ConnectionObject, NodeObject } from './placeable/NodeModels';
 export default defineComponent({
     name: "SavePopUp",
     data(){
@@ -28,7 +29,7 @@ export default defineComponent({
                 alert("Filename cannot be empty.");
                 return;
             }
-            let nodeObjects = [];
+            let nodeObjects = [] as (NodeObject | ConnectionObject)[];
             for (let node of nodeStorage) {
                 let object = {
                     nodeId: node.nodeId,
@@ -41,20 +42,24 @@ export default defineComponent({
                     activationMode: node.activationMode,
                     startX: node.startX,
                     startY: node.startY,
+                    startId: node.startId,
+                    endId: node.endId,
                     endX: node.endX,
                     endY: node.endY
-                }
+                } as (NodeObject | ConnectionObject)
                 nodeObjects.push(object);
             }
             console.log(nodeObjects);
-            saveLocal(this.filename);
+            saveLocal(this.filename,nodeObjects);
+            EventBus.$emit('saved_or_cancelled');
+
         },
         save_csv(){
             if (!this.filename) {
                 alert("Filename cannot be empty.");
                 return;
             }
-            let nodeObjects = [];
+            let nodeObjects = [] as (NodeObject | ConnectionObject)[];
             for (let node of nodeStorage) {
                 let object = {
                     nodeId: node.nodeId,
@@ -69,11 +74,12 @@ export default defineComponent({
                     startY: node.startY,
                     endX: node.endX,
                     endY: node.endY
-                }
+                } as (NodeObject | ConnectionObject);
                 nodeObjects.push(object);
             }
             console.log(nodeObjects);
             saveCSV(this.filename);
+            EventBus.$emit('saved_or_cancelled');
         },
         closePopup(){
             console.log(this.filename)
@@ -99,7 +105,7 @@ export default defineComponent({
 
 .save-box {
     position: relative;
-    padding: 30px; /* Increased padding to ensure space for the close button */
+    padding: 30px;
     background: white;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -159,3 +165,4 @@ input[type="text"] {
     font-size: 100;
 }
 </style>
+

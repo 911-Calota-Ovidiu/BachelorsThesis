@@ -1,25 +1,27 @@
 <template>
-    <div class="load-page">
-        <div class="load-box">
+    <div class="load-page" @click="closePopup">
+        <div class="load-box" @click.stop>
             <button class="close-button" @click="closePopup">X</button>
             <div class="diagram_data" style="display: flex; width: 100%; height: 100%;">
                 <div class="item-list" style="width: 50%; overflow-y: scroll;">
                     <ul>
-                        <li v-for="(diagram,index) in diagrams" :key="diagram.id" @click="selectItem(diagram)">
-                            {{index}} {{ diagram.name }} 
+                        <li v-for="(diagram, index) in diagrams" :key="diagram.id" @click="selectItem(diagram)">
+                            {{index}} {{ diagram.name }}
                         </li>
                     </ul>
                 </div>
                 <div class="item-details" style="width: 50%;">
                     <p v-if="selectedDiagram">Nodes: {{ selectedDiagram?.node_list.length }}</p>
                     <p v-for="typeCount in nodeTypeCounts" :key="typeCount.type">
-                    {{ typeCount.type }}: {{ typeCount.count }}
+                        {{ typeCount.type }}: {{ typeCount.count }}
                     </p>
                 </div>
             </div>
             <div class="button-group">
-                <button class="load-button" @click="loadFromCsv()">Load from CSV</button>
+                <input type="file" class="load-button" @change="selectFile" style="background-color: rgba(0, 0, 0, 0);">
+                <button class="load-button" @click="loadFile()">Load from XLSX</button>
                 <button class="load-button" @click="loadSelected()">Load Selected Diagram</button>
+                <button class="load-button" @click="createNewDiagram()">New Diagram</button>
             </div>
         </div>
     </div>
@@ -28,16 +30,18 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { EventBus } from '@/api/eventbus';
-import { loadAll } from '@/api/api_store';
+import { loadAll, sendFile } from '@/api/api_store';
 import Diagram from './models/Diagram';
 import { setNodeStorage } from '@/api/node_api';
-import { getNodeFromName } from './placeable/NodeModels';
+import { ConnectionObject, NodeObject, getConnectionFromName, getNodeFromName } from './placeable/NodeModels';
+
 export default defineComponent({
     name: "LoadPopUp",
     data(){
         return{
-            filename: "",
-            diagrams: [],
+            file: null as File | null,
+            fileData: new FormData,
+            diagrams: [] as Diagram[],
             selectedDiagram: null as unknown as Diagram,
         }
     },
@@ -45,7 +49,6 @@ export default defineComponent({
         loadAll().then(response => {
             this.diagrams = response;
         });
-        console.log("here",this.diagrams)
 
     },
     computed:{
@@ -70,14 +73,26 @@ export default defineComponent({
         }
     },
     methods:{
-        loadFromCsv() {
-            console.log('Loading as CSV:', this.filename);
-        },
         loadSelected() {
             let nodeList = [];
-            for(let node of this?.selectedDiagram?.node_list){
-                console.log("node is",node);
-                nodeList.push(getNodeFromName(node.label, node.x, node.y, node.nodeId));
+            if(!this.selectedDiagram){
+                alert("Please select a diagram first!");
+                return;
+            }
+            for(let node of this.selectedDiagram?.node_list){
+                if(node.type === "ResourceConnection" || node.type === "StateConnection" || node.type === "ResourceNode" || node.type === "StateNode"){   
+                        console.log(node)
+                        const startId = node.startId;
+                        const endId = node.endId;
+                        const startOfConnection = this.selectedDiagram?.node_list.find((nod: NodeObject | ConnectionObject) => nod.nodeId === startId) as NodeObject;
+                        const endOfConnection = this.selectedDiagram?.node_list.find((nod: NodeObject | ConnectionObject) => nod.nodeId === endId) as NodeObject;
+                        console.log("this must have x",startId)
+                        const connection = getConnectionFromName(node.nodeId,node.type, startOfConnection.x + 23, startOfConnection.y + 23, endOfConnection.x + 23, endOfConnection.y + 23, startId, endId);
+                        nodeList.push(connection);
+
+                } else {
+                    nodeList.push(getNodeFromName(node.type, node.x, node.y, node.nodeId))
+                }
             }
             setNodeStorage(nodeList)
             EventBus.$emit('loaded_or_cancelled');
@@ -88,9 +103,32 @@ export default defineComponent({
         selectItem(item: any) {
             this.selectedDiagram = item;
         },
+        selectFile(event: any){
+            this.file = event.target.files[0];
+        },
+        loadFile(){
+            if (!this.file) {
+                alert("Please select a file first!");
+                return;
+            }
+            this.fileData = new FormData();
+            this.fileData.append("file", this.file as File);
+            sendFile(this.fileData);
+        },
+        createNewDiagram() {
+            const newDiagram: Diagram = {
+                id: 2077,
+                name: `Name is irrelevant`,
+                node_list: []
+            };
+            this.diagrams.push(newDiagram);
+            this.selectedDiagram = newDiagram;
+            this.loadSelected();
+        }
     }
 })
 </script>
+
 <style>
 .load-page {
     position: fixed;
@@ -108,7 +146,7 @@ export default defineComponent({
 
 .load-box {
     position: relative;
-    padding: 30px; /* Increased padding to ensure space for the close button */
+    padding: 30px; 
     background: white;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -118,7 +156,7 @@ export default defineComponent({
     gap: 20px;
     width: 500px;
     height: 500px;
-    justify-content: flex-end; /* Aligns children to the bottom */
+    justify-content: flex-end;
 }
 
 input[type="text"] {
@@ -200,4 +238,8 @@ input[type="text"] {
 .item-details {
     padding-left: 20px;
 }
-</style>
+.load-file{
+    justify-content: center;
+    display: flex;
+}
+</style>NodeObject, 
