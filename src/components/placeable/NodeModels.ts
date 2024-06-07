@@ -1,8 +1,3 @@
-export type NodeEditor = {
-    label : string;
-    action: "rename" | "delete" | "recolor" | "move";
-};
-
 export abstract class ConnectionObject{
     startX : number;
     startY : number;
@@ -78,43 +73,6 @@ export abstract class NodeObject {
         this.endId = endId;
     }
 
-
-    //methods
-
-    public menuSelection(action: "rename" | "delete" | "recolor" | "move", deleteCallback: (shape: NodeObject) => void) {
-        switch(action){
-            case "delete":
-                this.delete(deleteCallback);
-                break;
-            case "rename":
-                this.rename();
-                break;
-            case "recolor":
-                this.recolor();
-                break;
-            case "move":
-                this.move();
-                break
-            default:
-                break;
-        }
-    }
-
-    //menu methods
-
-    public rename(){
-        console.log("selected rename");
-    }
-    public recolor(){
-        console.log("selected recolor");
-    }
-    public delete(deleteCallback: (shape: NodeObject) => void) {
-        deleteCallback(this);
-      }
-    public move(){
-        console.log("selected move");
-    }
-
     //abstract methods
 
     abstract renderNode() : string;
@@ -122,26 +80,23 @@ export abstract class NodeObject {
 
 export class Source extends NodeObject{
     renderNode(): string {
-        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})">`;
+        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})" style="z-index: 2">`;
         if(this.hoveringOver)
             {   
                 svg = svg + `<path d="M 0.5 21.2 L 23.5 21.2 L 12 0.5 Z" fill="none" stroke="#4286f4" stroke-opacity="0.8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke">
-                </path>
-                <path d="M 19.2 5.8 L 21.2 2.8 L 23.2 5.8 M 21.2 -0.2 L 21.2 2.8 L 18.2 1.3 M 21.2 2.8 L 24.2 1.3" fill="none" stroke="#4286f4" stroke-opacity="0.8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke">
                 </path>`;
             }
         if(this.editorShowing)
             {   
                 svg = svg + `<path d="M 0.5 21.2 L 23.5 21.2 L 12 0.5 Z" fill="none" stroke="#DF4E4E" stroke-opacity="0.8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke">
-                </path>
-                <path d="M 19.2 5.8 L 21.2 2.8 L 23.2 5.8 M 21.2 -0.2 L 21.2 2.8 L 18.2 1.3 M 21.2 2.8 L 24.2 1.3" fill="none" stroke="#DF4E4E" stroke-opacity="0.8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke">
                 </path>`;
             }
-        svg = svg + `<path d="M 19.2 5.8 L 21.2 2.8 L 23.2 5.8 M 21.2 -0.2 L 21.2 2.8 L 18.2 1.3 M 21.2 2.8 L 24.2 1.3" fill="none" stroke="white" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke" visibility="hidden" stroke-width="9">
-                    </path>
-                    <path d="M 19.2 5.8 L 21.2 2.8 L 23.2 5.8 M 21.2 -0.2 L 21.2 2.8 L 18.2 1.3 M 21.2 2.8 L 24.2 1.3" fill="none" stroke="${this.color}" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10">
-                    </path>
-                    <path d="M 0.5 21.2 L 23.5 21.2 L 12 0.5 Z" fill="#ffffff" stroke="${this.color}" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="all">
+        switch (this.activationMode){
+            case 2: svg = svg + `<path d="M 20 0 L 23 1 M 25 -2 L 23 -4 M 28 -4 L 27.5 -6 M 31.5 -4 L 32 -6 M 28 1 L 28 10 L 30 6 L 34 6 L 28 1" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>` ; break;
+            case 3: svg = svg + `<path d="M 22 10 L 25 5 L 28 10 M 30 3.5 L 25 5 L 25 0 M 25 5 L 20 3.5" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>`; break;
+            case 4: svg = svg + `<path d="M 22 -6 L 19 0 L 26 0 L 22 6" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>`; break;
+        }
+        svg = svg + `<path d="M 0.5 21.2 L 23.5 21.2 L 12 0.5 Z" fill="#ffffff" stroke="${this.color}" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="all">
                     </path>
                     </g>`;
         return svg;
@@ -150,7 +105,7 @@ export class Source extends NodeObject{
 
 export class Converter extends NodeObject{
     renderNode(): string {
-        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})">`;
+        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})" style="z-index: 2">`;
         if(this.hoveringOver)
             {   
                 svg = svg + `<path d="M 0.5 23.5 L 0.5 0.5 L 21.2 12 Z M 12 23.5 L 12 0.5 Z" fill="none" stroke="#4286f4" stroke-opacity="0.8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke">
@@ -161,6 +116,11 @@ export class Converter extends NodeObject{
                 svg = svg + `<path d="M 0.5 23.5 L 0.5 0.5 L 21.2 12 Z M 12 23.5 L 12 0.5 Z" fill="none" stroke="#DF4E4E" stroke-opacity="0.8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke">
                             </path>`;
             }
+        switch (this.activationMode){
+            case 2: svg = svg + `<path d="M 20 0 L 23 1 M 25 -2 L 23 -4 M 28 -4 L 27.5 -6 M 31.5 -4 L 32 -6 M 28 1 L 28 10 L 30 6 L 34 6 L 28 1" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>` ; break;
+            case 3: svg = svg + `<path d="M 22 10 L 25 5 L 28 10 M 30 3.5 L 25 5 L 25 0 M 25 5 L 20 3.5" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>`; break;
+            case 4: svg = svg + `<path d="M 22 -6 L 19 0 L 26 0 L 22 6" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>`; break;
+        }
         svg = svg + `<path d="M 0.5 23.5 L 0.5 0.5 L 21.2 12 Z M 12 23.5 L 12 0.5 Z" fill="#ffffff" stroke="${this.color}" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="all">
                     </path>
                     </g>`;
@@ -170,7 +130,7 @@ export class Converter extends NodeObject{
 
 export class Drain extends NodeObject{
     renderNode(): string {
-        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})">`;
+        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})" style="z-index: 2">`;
         if(this.hoveringOver)
             {   
                 svg = svg + `<path d="M 0.5 0.5 L 23.5 0.5 L 12 21.2 Z" fill="#ffffff" fill="none" stroke="#4286f4" stroke-opacity="0.8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke">
@@ -181,6 +141,11 @@ export class Drain extends NodeObject{
                 svg = svg + `<path d="M 0.5 0.5 L 23.5 0.5 L 12 21.2 Z" fill="#ffffff" fill="none" stroke="#DF4E4E" stroke-opacity="0.8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke">
                             </path>`;
         }
+        switch (this.activationMode){
+            case 2: svg = svg + `<path d="M 20 -3 L 23 -3 M 25 -5 L 23 -7 M 28 -7 L 27.5 -9 M 31.5 -7 L 32 -9 M 28 -2 L 28 7 L 30 3 L 34 3 L 28 -2" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>` ; break;
+            case 3: svg = svg + `<path d="M 27 10 L 30 5 L 33 10 M 35 3.5 L 30 5 L 30 0 M 30 5 L 25 3.5" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>`; break;
+            case 4: svg = svg + `<path d="M 25 -9 L 22 -3 L 29 -3 L 25 3" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>`; break;
+        }
         svg = svg + `<path d="M 0.5 0.5 L 23.5 0.5 L 12 21.2 Z" fill="#ffffff" stroke="${this.color}" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="all">
                     </path>
                     </g>`;
@@ -190,7 +155,7 @@ export class Drain extends NodeObject{
 
 export class EndCondition extends NodeObject{
     renderNode(): string {
-        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})">`;
+        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})" style="z-index: 2">`;
         if(this.hoveringOver)
             {   
                 svg = svg + `<rect x="2.8" y="2.8" width="18.4" height="18.4" fill="none" stroke="#4286f4" stroke-width="5" pointer-events="all">
@@ -216,7 +181,7 @@ export class EndCondition extends NodeObject{
 
 export class Gate extends NodeObject{
     renderNode(): string {
-        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})">`;
+        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})" style="z-index: 2">`;
         if(this.hoveringOver){   
                 svg = svg + `<path d="M 12 0.5 L 0.5 12 L 12 23.5 L 23.5 12 Z" fill="none" stroke="#4286f4" stroke-opacity="0.8" stroke-width="5" pointer-events="stroke">
                             </path>`;
@@ -225,6 +190,11 @@ export class Gate extends NodeObject{
             {   
                 svg = svg + `<path d="M 12 0.5 L 0.5 12 L 12 23.5 L 23.5 12 Z" fill="none" stroke="#DF4E4E" stroke-opacity="0.8" stroke-width="5" pointer-events="stroke">
                             </path>`;
+        }
+        switch (this.activationMode){
+            case 2: svg = svg + `<path d="M 20 0 L 23 1 M 25 -2 L 23 -4 M 28 -4 L 27.5 -6 M 31.5 -4 L 32 -6 M 28 1 L 28 10 L 30 6 L 34 6 L 28 1" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>` ; break;
+            case 3: svg = svg + `<path d="M 22 7 L 25 2 L 28 7 M 30 0.5 L 25 2 L 25 -3 M 25 2 L 20 0.5" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>`; break;
+            case 4: svg = svg + `<path d="M 22 -6 L 19 0 L 26 0 L 22 6" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>`; break;
         }
         svg = svg + `<path d="M 12 0.5 L 0.5 12 L 12 23.5 L 23.5 12 Z" fill="#ffffff" stroke="${this.color}" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="all">
                     </path>
@@ -235,7 +205,7 @@ export class Gate extends NodeObject{
 
 export class Pool extends NodeObject{
     renderNode(): string {
-        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})">`;
+        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})" style="z-index: 2">`;
         if(this.hoveringOver)
             {   
                 svg = svg + `<ellipse cx="12" cy="12" rx="11.5" ry="11.5" fill="none" stroke="#4286f4" stroke-opacity="0.8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke">
@@ -245,6 +215,11 @@ export class Pool extends NodeObject{
             {   
                 svg = svg + `<ellipse cx="12" cy="12" rx="11.5" ry="11.5" fill="none" stroke="#DF4E4E" stroke-opacity="0.8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke">
                             </ellipse>`;
+        }
+        switch (this.activationMode){
+            case 2: svg = svg + `<path d="M 20 0 L 23 1 M 25 -2 L 23 -4 M 28 -4 L 27.5 -6 M 31.5 -4 L 32 -6 M 28 1 L 28 10 L 30 6 L 34 6 L 28 1" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>` ; break;
+            case 3: svg = svg + `<path d="M 25 7 L 28 2 L 31 7 M 33 0.5 L 28 2 L 28 -3 M 28 2 L 23 0.5" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>`; break;
+            case 4: svg = svg + `<path d="M 25 -6 L 22 0 L 29 0 L 25 6" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>`; break;
         }
         svg = svg + `<ellipse cx="12" cy="12" rx="11.5" ry="11.5" fill="#ffffff" stroke="${this.color}" pointer-events="all">
                     </ellipse>
@@ -272,7 +247,7 @@ export class TextComponent extends NodeObject{
 
 export class Trader extends NodeObject{
     renderNode(): string {
-        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})">`;
+        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})" style="z-index: 2">`;
         if(this.hoveringOver)
             {   
                 svg = svg + `<path d="M 12 23.5 L 12 0.5 M 0.5 0.5 L 0.5 14.3 L 23.5 7.4 Z M 23.5 23.5 L 23.5 9.7 L 0.5 16.6 Z" fill="none" stroke="#4286f4" stroke-opacity="0.8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke">
@@ -283,6 +258,11 @@ export class Trader extends NodeObject{
                 svg = svg + `<path d="M 12 23.5 L 12 0.5 M 0.5 0.5 L 0.5 14.3 L 23.5 7.4 Z M 23.5 23.5 L 23.5 9.7 L 0.5 16.6 Z" fill="none" stroke="#DF4E4E" stroke-opacity="0.8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke">
                              </path>`;
         }
+        switch (this.activationMode){
+            case 2: svg = svg + `<path d="M 20 0 L 23 1 M 25 -2 L 23 -4 M 28 -4 L 27.5 -6 M 31.5 -4 L 32 -6 M 28 1 L 28 10 L 30 6 L 34 6 L 28 1" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>` ; break;
+            case 3: svg = svg + `<path d="M 25 7 L 28 2 L 31 7 M 33 0.5 L 28 2 L 28 -3 M 28 2 L 23 0.5" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>`; break;
+            case 4: svg = svg + `<path d="M 25 -6 L 22 0 L 29 0 L 25 6" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>`; break;
+        }
         svg = svg + `<path d="M 12 23.5 L 12 0.5 M 0.5 0.5 L 0.5 14.3 L 23.5 7.4 Z M 23.5 23.5 L 23.5 9.7 L 0.5 16.6 Z" fill="#ffffff" stroke="${this.color}" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="all">
                     </path>
                     </g>`;
@@ -292,7 +272,7 @@ export class Trader extends NodeObject{
 
 export class Register extends NodeObject{
     renderNode(): string {
-        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})">`;
+        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})" style="z-index: 2">`;
         if(this.hoveringOver)
             {   svg = svg + `<rect x="2.8" y="2.8" width="18.4" height="18.4" fill="none" stroke="#4286f4" stroke-opacity="0.8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke">
                             </rect>`;
@@ -315,7 +295,7 @@ export class Register extends NodeObject{
 
 export class Delay extends NodeObject{
     renderNode(): string {
-        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})">`;
+        let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})" style="z-index: 2">`;
         if(this.hoveringOver)
             {
                    svg = svg + `<ellipse cx="12" cy="12" rx="9.200000000000001" ry="9.200000000000001" fill="#ffffff" stroke="#4286f4" stroke-opacity="0.8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke">
@@ -326,6 +306,11 @@ export class Delay extends NodeObject{
                 svg = svg + `<ellipse cx="12" cy="12" rx="9.200000000000001" ry="9.200000000000001" fill="#ffffff" stroke="#DF4E4E" stroke-opacity="0.8" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke">
                 </ellipse>`;
             }
+        switch (this.activationMode){
+            case 2: svg = svg + `<path d="M 20 0 L 23 1 M 25 -2 L 23 -4 M 28 -4 L 27.5 -6 M 31.5 -4 L 32 -6 M 28 1 L 28 10 L 30 6 L 34 6 L 28 1" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>` ; break;
+            case 3: svg = svg + `<path d="M 25 7 L 28 2 L 31 7 M 33 0.5 L 28 2 L 28 -3 M 28 2 L 23 0.5" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>`; break;
+            case 4: svg = svg + `<path d="M 22 -6 L 19 0 L 26 0 L 22 6" fill="none" stroke="${this.color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10"></path>`; break;
+        }
         svg = svg + `<ellipse cx="12" cy="12" rx="9.200000000000001" ry="9.200000000000001" fill="#ffffff" stroke="${this.color}" pointer-events="all">
         </ellipse>
         <path d="M 10 8 L 14 8 M 10 16 L 14 16 M 10 8 C 10 10.85 14 13.15 14 16 M 14 8 C 14 10.85 10 13.15 10 16" fill="none" stroke="white" stroke-linejoin="round" stroke-linecap="round" stroke-miterlimit="10" pointer-events="stroke" visibility="hidden" stroke-width="9">
@@ -340,7 +325,7 @@ export class Delay extends NodeObject{
 export class StateNode extends NodeObject{
     renderNode(): string {
 
-        return `<g id="${this.nodeId}" width="40" height="40" transform="translate(${this.x}, ${this.y})" >
+        return `<g id="${this.nodeId}" width="40" height="40" transform="translate(${this.x}, ${this.y})" style="z-index: 2">
         <circle cx="10" cy="10" r="${this.size}" stroke="white" stroke-width="2" fill="white" />
         <circle cx="10" cy="10" r="${this.size}" stroke="white" stroke-width="2" fill="transparent" />
         <circle cx="0" cy="20" r="3" stroke="${this.color}" stroke-width="2" fill="transparent" />
@@ -356,7 +341,7 @@ export class StateNode extends NodeObject{
 
 export class ResourceNode extends NodeObject{
     renderNode(): string {
-        return `<g id="${this.nodeId}" width="40" height="40" transform="translate(${this.x}, ${this.y})" >
+        return `<g id="${this.nodeId}" width="40" height="40" transform="translate(${this.x}, ${this.y})" style="z-index: 2">
         <circle cx="10" cy="10" r="${this.size}" stroke="white" stroke-width="2" fill="transparent" />
         <circle cx="0" cy="20" r="3" stroke="${this.color}" stroke-width="2" fill="transparent" />
         <line x1="2" y1="18" x2="18" y2="2" stroke="${this.color}" stroke-width="2"/>
@@ -371,12 +356,12 @@ export class ResourceConnection extends ConnectionObject{
     renderNode(): string {
         if (this.hoveringOver)
             {
-                return `<g id="${this.nodeId}">
+                return `<g id="${this.nodeId}" style="z-index: 0">
                 <line x1="${this.startX}" y1="${this.startY}" x2="${this.endX}" y2="${this.endY}" stroke="#00b36b" stroke-width="5" stroke-linecap="round"/>
                 <line x1="${this.startX}" y1="${this.startY}" x2="${this.endX}" y2="${this.endY}" stroke="${this.color}" stroke-width="2" />
                 </g>`;
             }
-        return `<g id="${this.nodeId}">
+        return `<g id="${this.nodeId}" style="z-index: 0">
         <line x1="${this.startX}" y1="${this.startY}" x2="${this.endX}" y2="${this.endY}" stroke="${this.color}" stroke-width="2" />
         </g>`;
     }
@@ -386,12 +371,12 @@ export class StateConnection extends ConnectionObject{
     renderNode(): string {
         if (this.hoveringOver)
             {
-                return `<g id="${this.nodeId}">
+                return `<g id="${this.nodeId}" style="z-index: 0">
                 <line x1="${this.startX}" y1="${this.startY}" x2="${this.endX}" y2="${this.endY}" stroke="#00b36b" stroke-width="5" stroke-dasharray="10, 4" stroke-linecap="round" />
                 <line x1="${this.startX}" y1="${this.startY}" x2="${this.endX}" y2="${this.endY}" stroke="${this.color}" stroke-width="2" stroke-dasharray="10, 4" />
                 </g>`;
             }
-        return `<g id="${this.nodeId}">
+        return `<g id="${this.nodeId}" style="z-index: 0">
         <line x1="${this.startX}" y1="${this.startY}" x2="${this.endX}" y2="${this.endY}" stroke="${this.color}" stroke-width="2" stroke-dasharray="10, 4"  />
         </g>`;
     }

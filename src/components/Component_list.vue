@@ -1,6 +1,5 @@
 <template>
-  <div id="component-list" class="component-list" style="text-align: left;
-">
+  <div id="component-list" class="component-list" style="text-align: left;">
     <svg height="50px" width="500px">
       <Transition v-for="(node, index) in nodes" v-bind:key="index">
         <g v-html="node.renderNode()" @click='selectNode(node.label)' style="user-select: none;"></g>
@@ -21,6 +20,7 @@ export default defineComponent({
 
     onMounted(() => {
       nodes.value.push(new Source(1, 10, 20, "Source", "black", 1, 2, -1, -1));
+      nodes.value[0].activationMode = 3;
       nodes.value.push(new Drain(2, 45, 20, "Drain", "black", 1, 1, -1, -1));
       nodes.value.push(new Pool(3, 80, 20, "Pool", "black", 1, 1, -1, -1));
       nodes.value.push(new Gate(4, 115, 20, "Gate", "black", 1, 1, -1, -1));

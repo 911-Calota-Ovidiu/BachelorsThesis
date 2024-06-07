@@ -55,8 +55,23 @@ export default defineComponent({
     EventBus.$on('connection_placing', (connection: ConnectionObject) => {
       nodeStorage.push(connection);
       this.nodeStorage = nodeStorage;
+      this.nodeStorage.sort((a, b) => {
+          const connectionTypes = ['ResourceConnection', 'StateConnection'];
+          const aIsConnection = connectionTypes.includes(a.constructor.name);
+          const bIsConnection = connectionTypes.includes(b.constructor.name);
+          if (aIsConnection && !bIsConnection) return -1;
+          if (!aIsConnection && bIsConnection) return 1;
+          return 0;
+        });
     });
     EventBus.$on('selected_node',() => {
+      let node = window.localStorage.getItem("SELECTED_NODE");
+      if(node === "ResourceNode" ||node === "StateNode"){
+        this.placingConnection = true;
+        this.selectedConnection = node;
+      } else {
+        this.placingConnection = false;
+      }
       this.disableZoom();
     });
     this.setupZoom();
@@ -91,14 +106,11 @@ export default defineComponent({
         const id = nodeStorage.length;
         let node;
 
-        // Get the bounding client rect of the SVG container
         const svgRect = this.editorContainer!.getBoundingClientRect();
 
-        // Calculate cursor position relative to the SVG container
         const cursorX = event.clientX - svgRect.left;
         const cursorY = event.clientY - svgRect.top;
 
-        // Transform the cursor position using the current zoom transform
         const [x, y] = this.currentZoomTransform.invert([cursorX, cursorY]);
 
         if (nodeName === 'ResourceNode' || nodeName === 'StateNode') {
@@ -141,11 +153,11 @@ export default defineComponent({
         this.openEditorMenu(node);
       } else {
         if (!this.startNode) {
-          if (node.type !== 'ResourceNode' && node.type !== 'StateNode') {
+          if (node.type !== 'ResourceConnection' && node.type !== 'StateConnection') {
             this.setStart(node as NodeObject);
           }
         } else {
-          if (node.type !== 'ResourceNode' && node.type !== 'StateNode') {
+          if (node.type !== 'ResourceConnection' && node.type !== 'StateConnection') {
             if (this.startNode === node) {
               return;
             }
@@ -208,8 +220,8 @@ export default defineComponent({
 
 .zoom-button {
   position: fixed;
-  top: 65px;
-  right: 350px;
+  top: 7%;
+  right: 20.5%;
   margin: 5px;
   z-index: 2;
   padding: 10px;
