@@ -5,8 +5,11 @@
           <div class="variable-editor" v-if="editing">
             <p style="text-align: center; margin-left: 10px;">{{selection?.type}}</p>
               <div class="editor-item">
-                  <p style="text-align: left; margin-left: 10px;">Label
-                      <input type="text" :value="nodeLabel" style="margin:10px; width: 200px;">
+                  <p style="text-align: left; margin-left: 10px;" v-if="selection?.type === 'Text' ">Text
+                      <input type="text" v-model="nodeLabel" style="margin:10px; width: 200px;">
+                  </p>
+                  <p style="text-align: left; margin-left: 10px;" v-if="selection?.type !== 'Text' ">Label
+                      <input type="text" v-model="nodeLabel" style="margin:10px; width: 200px;">
                   </p>
               </div>
               <div class="editor-item">
@@ -74,7 +77,6 @@ export default defineComponent({
         this.selection!.color=this.nodeColor;
         this.selection!.activationMode=this.activationMode;
         this.selection!.size=this.nodeSize;
-        console.log("lol",this.selection)
         EventBus.$emit("loaded_or_cancelled");
       },
       deleteNode(){

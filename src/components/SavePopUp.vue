@@ -49,7 +49,6 @@ export default defineComponent({
                 } as (NodeObject | ConnectionObject)
                 nodeObjects.push(object);
             }
-            console.log(nodeObjects);
             saveLocal(this.filename,nodeObjects);
             EventBus.$emit('saved_or_cancelled');
 
@@ -77,12 +76,10 @@ export default defineComponent({
                 } as (NodeObject | ConnectionObject);
                 nodeObjects.push(object);
             }
-            console.log(nodeObjects);
             saveCSV(this.filename);
             EventBus.$emit('saved_or_cancelled');
         },
         closePopup(){
-            console.log(this.filename)
             EventBus.$emit('saved_or_cancelled');
         }
     }

@@ -5,7 +5,6 @@ import { NodeObject, ConnectionObject, getNodeFromName, getConnectionFromName } 
 
 const BASE_URL="http://localhost:8081/machinations_api/"
 export function saveLocal(name: String,nodeObjects: (NodeObject | ConnectionObject)[]){
-    console.log(" pula",nodeObjects)
     axios.post(BASE_URL + "save/" + name, nodeObjects);
 }
 
@@ -27,7 +26,6 @@ export function sendFile(file: any) {
         .then(response => {
             const nodeList = [];
             const fileNodes = response.data;
-            console.log(fileNodes)
             for(const node of fileNodes){
                 if(node.type === "ResourceConnection" || node.type === "StateConnection" || node.type === "ResourceNode" || node.type === "StateNode"){   
                         

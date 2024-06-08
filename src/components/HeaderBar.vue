@@ -14,7 +14,6 @@
 import ComponentList from './Component_list.vue';
 import { defineComponent} from 'vue';
 import { EventBus } from '@/api/eventbus';
-import { nodeStorage } from '@/api/node_api';
 import SavePopUp from './SavePopUp.vue';
 import LoadPopUp from './LoadPopUp.vue';
 export default defineComponent({
@@ -31,16 +30,10 @@ export default defineComponent({
         }
     },
     mounted() {
-        EventBus.$on("update_local_diagram", () =>{
-            console.log("data is",nodeStorage)
-        });
-
         EventBus.$on("loaded_or_cancelled", () =>{
-            console.log("data is",nodeStorage)
             this.loading=false;
         });
         EventBus.$on("saved_or_cancelled", () =>{
-            console.log("data is",nodeStorage)
             this.saving=false;
         });
     },

@@ -81,12 +81,10 @@ export default defineComponent({
             }
             for(let node of this.selectedDiagram?.node_list){
                 if(node.type === "ResourceConnection" || node.type === "StateConnection" || node.type === "ResourceNode" || node.type === "StateNode"){   
-                        console.log(node)
                         const startId = node.startId;
                         const endId = node.endId;
                         const startOfConnection = this.selectedDiagram?.node_list.find((nod: NodeObject | ConnectionObject) => nod.nodeId === startId) as NodeObject;
                         const endOfConnection = this.selectedDiagram?.node_list.find((nod: NodeObject | ConnectionObject) => nod.nodeId === endId) as NodeObject;
-                        console.log("this must have x",startId)
                         const connection = getConnectionFromName(node.nodeId,node.type, startOfConnection.x + 23, startOfConnection.y + 23, endOfConnection.x + 23, endOfConnection.y + 23, startId, endId);
                         nodeList.push(connection);
 

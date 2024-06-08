@@ -142,7 +142,6 @@ export default defineComponent({
       });
       EventBus.$emit('node_editor_selection_end');
 
-      // Re-enable zoom when node selection is cleared
       this.enableZoom();
     },
     updateHoverStatus(node: NodeObject, status: boolean) {
@@ -153,11 +152,11 @@ export default defineComponent({
         this.openEditorMenu(node);
       } else {
         if (!this.startNode) {
-          if (node.type !== 'ResourceConnection' && node.type !== 'StateConnection') {
+          if (node.type !== 'ResourceConnection' && node.type !== 'StateConnection' && node.type !== 'Text') {
             this.setStart(node as NodeObject);
           }
         } else {
-          if (node.type !== 'ResourceConnection' && node.type !== 'StateConnection') {
+          if (node.type !== 'ResourceConnection' && node.type !== 'StateConnection' && node.type !== 'Text') {
             if (this.startNode === node) {
               return;
             }

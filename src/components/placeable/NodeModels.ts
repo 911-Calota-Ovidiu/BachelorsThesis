@@ -73,8 +73,6 @@ export abstract class NodeObject {
         this.endId = endId;
     }
 
-    //abstract methods
-
     abstract renderNode() : string;
 }
 
@@ -245,6 +243,37 @@ export class TextComponent extends NodeObject{
     }
 }
 
+export class DiagramText extends NodeObject{
+    renderNode(): string {
+        const offscreenSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        const textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        textElement.setAttribute("x", "0");
+        textElement.setAttribute("y", "0");
+        textElement.setAttribute("fill", "black");
+        textElement.textContent = this.label;
+        offscreenSvg.appendChild(textElement);
+        document.body.appendChild(offscreenSvg);
+    
+        const textWidth = textElement.getBBox().width;
+    
+        document.body.removeChild(offscreenSvg);
+    
+        const padding = 10;
+        const rectWidth = textWidth * 1.2 + 2 * padding;
+        const rectHeight = 30;
+    
+        let svg = `<g id="${this.nodeId}" transform="translate(${this.x}, ${this.y}) scale(${this.size})" style="z-index: 2">`;
+    
+        svg += `<rect x="0" y="0" width="${rectWidth}" height="${rectHeight}" fill="none" stroke="black" stroke-dasharray="5,5"></rect>`;
+    
+        svg += `<text x="${padding}" y="${rectHeight / 2 + 5}" fill="black">${this.label}</text>`;
+    
+        svg += `</g>`;
+        return svg;
+    }
+    
+}
+
 export class Trader extends NodeObject{
     renderNode(): string {
         let svg = `<g id="${this.nodeId}" width="46" height="46" transform="translate(${this.x}, ${this.y}) scale(${this.size})" style="z-index: 2">`;
@@ -392,7 +421,7 @@ export function getNodeFromName(name: string, x: number, y: number, nodeId: numb
         case "Converter" : return new Converter(nodeId, x, y, name, "black", 2, 1, -1, -1);
         case "Delay": return new Delay(nodeId, x, y, name, "black", 2, 1, -1, -1);
         case "EndCondition" : return new EndCondition(nodeId, x, y, name, "black", 2, 1, -1, -1);
-        case "Text" : return new TextComponent(nodeId, x, y, name, "black", 2, 1, -1, -1);
+        case "Text" : return new DiagramText(nodeId, x, y, name, "black", 2, 1, -1, -1);
         case "Register" : return new Register(nodeId, x, y, name, "black", 2, 1, -1, -1);
         default: throw new Error("No node selected");
     }
